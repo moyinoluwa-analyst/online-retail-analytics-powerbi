@@ -1,0 +1,168 @@
+CORE KPI MEASURES
+
+Total Revenue =
+SUM(OnlineRetail[Revenue])
+
+Total Orders =
+DISTINCTCOUNT(OnlineRetail[InvoiceNo])
+
+Total Customers =
+DISTINCTCOUNT(OnlineRetail[CustomerID])
+
+Average Order Value =
+DIVIDE([Total Revenue],[Total Orders])
+
+REVENUE MEASURES
+Revenue per Customer =
+DIVIDE([Total Revenue],[Total Customers])
+
+Revenue per Order =
+DIVIDE([Total Revenue],[Total Orders])
+
+PRODUCT MEASURES
+Total Products Sold =
+DISTINCTCOUNT(OnlineRetail[StockCode])
+
+Average Quantity per Order =
+DIVIDE([Total Quantity Sold],[Total Orders])
+
+CUSTOMER SEGMENTATION(RFM)
+LAST PURCHASE DATE
+Last Purchase Date =
+CALCULATE(
+    MAX(OnlineRetail[InvoiceDate]),
+    ALLEXCEPT(
+        OnlineRetail,
+        OnlineRetail[CustomerID]
+    )
+)
+
+Recency (Days Since Last Purchase)
+Recency =
+DATEDIFF(
+    [Last Purchase Date],
+    MAX(OnlineRetail[InvoiceDate]),
+    DAY
+)
+
+Frequency
+Frequency =
+CALCULATE(
+    DISTINCTCOUNT(OnlineRetail[InvoiceNo]),
+    ALLEXCEPT(
+        OnlineRetail,
+        OnlineRetail[CustomerID]
+    )
+)
+
+monetary
+Monetary =
+CALCULATE(
+    SUM(OnlineRetail[Revenue]),
+    ALLEXCEPT(
+        OnlineRetail,
+        OnlineRetail[CustomerID]
+    )
+)
+
+RFM scores
+Recency Score =
+SWITCH(
+    TRUE(),
+    [Recency] <= 30, 5,
+    [Recency] <= 60, 4,
+    [Recency] <= 90, 3,
+    [Recency] <= 180, 2,
+    1
+)
+
+frequency scores
+Frequency Score =
+SWITCH(
+    TRUE(),
+    [Frequency] >= 20, 5,
+    [Frequency] >= 10, 4,
+    [Frequency] >= 5, 3,
+    [Frequency] >= 2, 2,
+    1
+)
+
+monetary score
+Monetary Score =
+SWITCH(
+    TRUE(),
+    [Monetary] >= 5000, 5,
+    [Monetary] >= 2000, 4,
+    [Monetary] >= 1000, 3,
+    [Monetary] >= 500, 2,
+    1
+)
+
+RFM combined score
+RFM Score =
+FORMAT([Recency Score],"0")
+&
+FORMAT([Frequency Score],"0")
+&
+FORMAT([Monetary Score],"0")
+
+customer segments
+Customer Segment =
+SWITCH(
+    TRUE(),
+
+    [Recency Score] = 5 &&
+    [Frequency Score] >= 4 &&
+    [Monetary Score] >= 4,
+    "Champions",
+
+    [Recency Score] >= 4 &&
+    [Frequency Score] >= 3,
+    "Loyal",
+
+    [Recency Score] >= 3 &&
+    [Frequency Score] >= 2,
+    "Potential Loyalists",
+
+    [Recency Score] <= 2 &&
+    [Frequency Score] >= 2,
+    "At Risk",
+
+    "Lost"
+)
+
+Segment Count Measures
+champion count
+Champions Count =
+CALCULATE(
+    DISTINCTCOUNT(OnlineRetail[CustomerID]),
+    OnlineRetail[Customer Segment] = "Champions"
+)
+
+loyal count
+Loyal Count =
+CALCULATE(
+    DISTINCTCOUNT(OnlineRetail[CustomerID]),
+    OnlineRetail[Customer Segment] = "Loyal"
+)
+
+potential loyalists count
+Potential Loyalists Count =
+CALCULATE(
+    DISTINCTCOUNT(OnlineRetail[CustomerID]),
+    OnlineRetail[Customer Segment] = "Potential Loyalists"
+)
+
+at risk count
+At Risk Count =
+CALCULATE(
+    DISTINCTCOUNT(OnlineRetail[CustomerID]),
+    OnlineRetail[Customer Segment] = "At Risk"
+)
+
+lost count
+Lost Count =
+CALCULATE(
+    DISTINCTCOUNT(OnlineRetail[CustomerID]),
+    OnlineRetail[Customer Segment] = "Lost"
+)
