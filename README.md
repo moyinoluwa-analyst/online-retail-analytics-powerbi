@@ -85,6 +85,24 @@ RFM Analysis:
 * Reduce dependence on a single geographic market.
 * Expand loyalty programs for Champions and Loyal customers.
 
+## Dashboard Preview
+
+### Executive Dashboard
+
+![Executive Dashboard](screenshots/executive_dashboard.png)
+
+### Customer Segmentation Dashboard
+
+![Customer Segmentation Dashboard](screenshots/customer_segmentation.png)
+
+
+## Dataset
+
+The dataset used for this project exceeded GitHub's file size limits and is therefore not included in this repository.
+
+Source: Online Retail Dataset from UCI Machine Learning Repository.
+
+The cleaned dataset can be provided upon request.
 
 ## Author
 
